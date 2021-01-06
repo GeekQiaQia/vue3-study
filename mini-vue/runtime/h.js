@@ -4,9 +4,9 @@
  * @param {*} props 
  * @param {*} children 
  */
-function h(type, props, children = []) {
+function h(tag, props, children = []) {
   return {
-    type,
+    tag,
     props,
     children,
   };

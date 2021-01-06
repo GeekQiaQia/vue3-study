@@ -55,6 +55,7 @@
 //   a: 30,
 // });
 
+// reactivity part
 // 1. 收集依赖
 // 2. 触发依赖
 let currentEffect;
@@ -85,7 +86,7 @@ class Dep {
   }
 }
 
-export const watchEffect = (effect) => {
+export function watchEffect (effect)  {
   currentEffect = effect;
   effect();
   currentEffect = null;
@@ -96,20 +97,7 @@ export const watchEffect = (effect) => {
 // }
 
 const targetMap = new WeakMap();
-
-export function reactive(raw) {
-  // 对象
-  // 如果对象的每个 key 当做之前的 dep 的话，那么一个 key 就应该有一个 dep
-  // 每一个 key 的 dep 应该存储在哪里
-  // 设置的时候，是不是需要调用到 dep 的 notice 或者是 depend
-  // 之前我们学过用 object.definePropriety
-  // Proxy
-
-  // 多个对象
-  // 当前这个对象
-  // 基于它的key 来找对应的 dep 啊
-
-  const getDep = (target, key) => {
+function getDep (target, key){
     // 去找到当前 key 对应的 dep
     let depsMap = targetMap.get(target);
     if (!depsMap) {
@@ -124,7 +112,18 @@ export function reactive(raw) {
     }
 
     return dep;
-  };
+  }
+export function reactive(raw) {
+  // 对象
+  // 如果对象的每个 key 当做之前的 dep 的话，那么一个 key 就应该有一个 dep
+  // 每一个 key 的 dep 应该存储在哪里
+  // 设置的时候，是不是需要调用到 dep 的 notice 或者是 depend
+  // 之前我们学过用 object.definePropriety
+  // Proxy
+
+  // 多个对象
+  // 当前这个对象
+  // 基于它的key 来找对应的 dep 啊
 
   return new Proxy(raw, {
     get(target, key) {

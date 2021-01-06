@@ -11,10 +11,11 @@ export function createApp(rootComponent) {
       watchEffect(() => {
         if (!isMounted) {
           // mount
-          isMounted = true;
           const subTree = rootComponent.render(setupResult);
           prevSubTree = subTree;
           mountElement(subTree, rootContainer);
+          isMounted = true;
+
         } else {
           // update
           const subTree = rootComponent.render(setupResult);

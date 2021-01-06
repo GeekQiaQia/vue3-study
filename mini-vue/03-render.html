@@ -5,53 +5,36 @@
     <script src="./runtime/h.js"></script>
     <script src="./runtime/renderer.js"></script>
     <script>
-      const Vue = {
-        createApp(config) {
-          return {
-            mount: function (container) {
-              const dom = document.querySelector(container);
-              // 生成渲染函数
-              //   const render = compile(config.template);
+ const Vue={
+    createApp(config){
+        return {
+            mount:function(container){
+            
+                let setupResult= config.setup();
+                let render=config.render(setupResult);
+                let el= document.querySelector(container);
+                let isMounted=false;
+                let prevVdom;
+                watchEffect(()=>{
+                    if(!isMounted){
+                        prevVdom=config.render(setupResult);
+                        mountElement(prevVdom,el);
+                        isMounted=true;
+                    }else{
+                        const newVdom=config.render(setupResult);
+                        diff(prevVdom,newVdom);
+                        prevVdom=newVdom;
+                    }
+                });
 
-              const setupResult = config.setup();
-              const render = config.render(setupResult);
-
-              // 修改
-              // effective = () => render(setupResult, dom);
-              //   watchEffect(() => render(setupResult, dom));
-              //   render(setupResult, dom);
-
-              let isMounted = false;
-              let prevSubTree;
-              watchEffect(() => {
-                dom.innerHTML = "";
-                if (true) {
-                  // mount
-                  isMounted = true;
-                  const subTree = config.render(setupResult);
-                  prevSubTree = subTree;
-                  mountElement(subTree, dom);
-                } else {
-                  // update
-                  const subTree = config.render(setupResult);
-                  diff(prevSubTree, subTree);
-                  prevSubTree = subTree;
-                }
-              });
-            },
-          };
-        },
-      };
+            }
+        }
+    }
+}
       // 定义响应函数
       let effective;
-      const App = {
-        // 视图
-        // template: `
-        //         <input v-model="message"/>
-        //         <button @click='click'>{{message}}</button>
-        //     `,
-
-        render(content) {
+      const App={
+    render(content) {
           return h("div", null, [
             h("div", null, String(content.state.message)),
             h(
@@ -63,8 +46,8 @@
             ),
           ]);
         },
-
-        setup() {
+    
+    setup() {
           const state = reactive({
             message: "Hello Vue 3!!",
           });
@@ -74,7 +57,9 @@
           };
           return { state, click };
         },
-      };
+
+
+}
       const { createApp } = Vue;
       createApp(App).mount("#app");
     </script>
